@@ -280,7 +280,7 @@ class OllamaService:
         if thinking is False:
             payload["think"] = False
 
-        logger.debug(f"Payload: {payload}") # fixme
+        # logger.debug(f"Payload: {payload}")
 
         async with client.stream("POST", "/api/generate", json=payload) as response:
             if response.status_code == 404:

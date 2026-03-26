@@ -339,8 +339,8 @@ class TranslationService:
                 f"system_prompt_len={len(system_prompt)}"
             )
 
-            logger.debug(f"----- User prompt: {user_prompt}")  # fixme
-            logger.debug(f"----- System prompt: {system_prompt}")  # fixme
+            # logger.debug(f"----- User prompt: {user_prompt}")
+            # logger.debug(f"----- System prompt: {system_prompt}")
 
             async for token_data in ollama_service.generate_stream(
                 model=model,
@@ -357,7 +357,7 @@ class TranslationService:
                     }
                     return
 
-                logger.debug(f"----- Token data: {token_data}")  # fixme
+                # logger.debug(f"----- Token data: {token_data}")
 
                 token = token_data.get("response", "")
 
