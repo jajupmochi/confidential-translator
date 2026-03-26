@@ -1,0 +1,51 @@
+{
+    "nav": {
+        "dashboard": "Dashboard",
+        "textTranslation": "Text Translate",
+        "fileTranslation": "File Translate",
+        "history": "History",
+        "models": "Models",
+        "settings": "Settings"
+    },
+    "common": {
+        "translate": "Translate",
+        "translating": "Translating...",
+        "cancel": "Cancel",
+        "download": "Download",
+        "copy": "Copy",
+        "delete": "Delete",
+        "autoDetect": "Auto Detect",
+        "copied": "Copied to clipboard!"
+    },
+    "dashboard": {
+        "welcome": "Welcome to Confidential Translator",
+        "totalTranslations": "Total Translations",
+        "charsTranslated": "Chars Translated",
+        "avgTime": "Average Time",
+        "topPair": "Top Language Pair",
+        "recentHistory": "Recent Activity"
+    },
+    "translate": {
+        "sourcePlaceholder": "Enter text to translate...",
+        "targetPlaceholder": "Translation will appear here...",
+        "report": {
+            "title": "Translation Report",
+            "model": "Model Used",
+            "time": "Time Taken",
+            "speed": "Tokens/sec"
+        }
+    },
+    "file": {
+        "dropzoneTitle": "Drop your file here",
+        "dropzoneSubtitle": "or click to browse",
+        "supportedFormats": "Supported formats: PDF, Images (OCR), DOCX, MD, XLSX, CSV, TXT (Max 50MB)",
+        "exporting": "Exporting file..."
+    },
+    "models": {
+        "installed": "Installed Models",
+        "recommended": "Recommended for your system",
+        "pull": "Pull new model",
+        "pulling": "Downloading...",
+        "deleteConfirm": "Are you sure you want to delete this model?"
+    }
+}

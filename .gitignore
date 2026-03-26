@@ -1,0 +1,78 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+*.egg-info/
+*.egg
+.eggs/
+*.whl
+pip-log.txt
+pip-delete-this-directory.txt
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Node
+node_modules/
+dist/
+.output/
+.nuxt/
+*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Build artifacts
+*.AppImage
+*.deb
+*.exe
+*.dmg
+*.msi
+
+# Storybook
+storybook-static/
+
+# MkDocs
+site/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# SQLite database
+*.db
+*.sqlite3
+
+# Vibe
+vibe/
+
+# OS
+Thumbs.db

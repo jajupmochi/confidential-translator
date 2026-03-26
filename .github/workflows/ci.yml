@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  backend-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v5
+        
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          
+      - name: Install dependencies
+        working-directory: ./backend
+        run: uv sync --all-extras
+        
+      - name: Lint with Ruff
+        working-directory: ./backend
+        run: |
+          uv run ruff check app tests
+          uv run ruff format --check app tests
+          
+      - name: Run tests with pytest
+        working-directory: ./backend
+        run: |
+          uv run py.test tests --cov=app --cov-report=xml
+          
+  frontend-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: './frontend/package-lock.json'
+          
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm ci
+        
+      - name: Run unit tests
+        working-directory: ./frontend
+        run: npx vitest run
+        
+      - name: Build frontend
+        working-directory: ./frontend
+        run: npm run build

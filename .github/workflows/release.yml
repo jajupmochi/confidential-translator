@@ -1,0 +1,86 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            asset_name: confidential-translator-linux-amd64
+            executable: confidential-translator
+          - os: windows-latest
+            asset_name: confidential-translator-windows-amd64.exe
+            executable: confidential-translator.exe
+          - os: macos-latest
+            asset_name: confidential-translator-macos-x64
+            executable: confidential-translator
+            
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          
+      - name: Build Frontend
+        working-directory: ./frontend
+        run: |
+          npm ci
+          npm run build
+          
+      - name: Move Frontend to Backend
+        shell: bash
+        run: |
+          mkdir -p backend/app/static
+          cp -r frontend/dist/* backend/app/static/
+          
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v5
+        
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          
+      - name: Install dependencies for build
+        working-directory: ./backend
+        run: |
+          uv sync --all-extras
+          uv pip install pyinstaller
+          
+      - name: Build executable with PyInstaller
+        working-directory: ./backend
+        run: |
+          uv run pyinstaller --name=${{ matrix.executable }} --onefile --add-data="app/static:app/static" app/main.py
+          
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.asset_name }}
+          path: backend/dist/${{ matrix.executable }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/**/*
+          draft: false
+          generate_release_notes: true

@@ -1,0 +1,51 @@
+{
+    "nav": {
+        "dashboard": "仪表盘",
+        "textTranslation": "文本翻译",
+        "fileTranslation": "文件翻译",
+        "history": "历史记录",
+        "models": "本地模型",
+        "settings": "设置"
+    },
+    "common": {
+        "translate": "翻译",
+        "translating": "翻译中...",
+        "cancel": "取消",
+        "download": "下载",
+        "copy": "复制",
+        "delete": "删除",
+        "autoDetect": "自动检测",
+        "copied": "已复制到剪贴板！"
+    },
+    "dashboard": {
+        "welcome": "欢迎使用本地机密翻译",
+        "totalTranslations": "总翻译次数",
+        "charsTranslated": "已译字符数",
+        "avgTime": "平均耗时",
+        "topPair": "最常用语种",
+        "recentHistory": "最近活动"
+    },
+    "translate": {
+        "sourcePlaceholder": "请输入需要翻译的文本...",
+        "targetPlaceholder": "翻译结果将显示在这里...",
+        "report": {
+            "title": "翻译报告",
+            "model": "使用模型",
+            "time": "耗时",
+            "speed": "速度 (Tokens/秒)"
+        }
+    },
+    "file": {
+        "dropzoneTitle": "拖拽文件到这里",
+        "dropzoneSubtitle": "或点击选择文件",
+        "supportedFormats": "支持格式: PDF, 图片 (OCR), DOCX, MD, XLSX, CSV, TXT (最大50MB)",
+        "exporting": "正在导出文件..."
+    },
+    "models": {
+        "installed": "已安装模型",
+        "recommended": "为您系统推荐",
+        "pull": "下载新模型",
+        "pulling": "下载中...",
+        "deleteConfirm": "确定要删除此模型吗？"
+    }
+}
