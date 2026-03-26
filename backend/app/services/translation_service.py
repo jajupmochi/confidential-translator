@@ -190,20 +190,24 @@ class TranslationService:
         model = model or settings.default_model
         start_time = time.monotonic()
 
+        detected_lang = source_language
         # Auto-detect source language
         if source_language == "auto":
-            source_language, _ = self.detect_language(text)
+            detected_lang, _ = self.detect_language(text)
 
         # If source == target, return as-is
-        if source_language == target_language:
+        if detected_lang == target_language:
             elapsed_ms = int((time.monotonic() - start_time) * 1000)
             report = TranslationReport(
-                source_language=source_language,
+                source_language=detected_lang,
                 target_language=target_language,
                 model_used=model,
                 characters_input=len(text),
                 characters_output=len(text),
+                tokens_input=0,
+                tokens_output=0,
                 time_taken_ms=elapsed_ms,
+                tokens_per_second=0.0,
             )
             return text, report
 
@@ -237,7 +241,7 @@ class TranslationService:
         tokens_per_second = (total_tokens / (elapsed_ms / 1000)) if elapsed_ms > 0 else 0
 
         report = TranslationReport(
-            source_language=source_language,
+            source_language=detected_lang,
             target_language=target_language,
             model_used=model,
             characters_input=len(text),
@@ -276,22 +280,23 @@ class TranslationService:
         model = model or settings.default_model
         start_time = time.monotonic()
 
+        detected_lang = source_language
         if source_language == "auto":
-            source_language, _ = self.detect_language(text)
+            detected_lang, _ = self.detect_language(text)
 
-        if source_language == target_language:
+        if detected_lang == target_language:
             elapsed_ms = int((time.monotonic() - start_time) * 1000)
             yield {
                 "type": "meta",
                 "model": model,
-                "source_lang": source_language,
+                "source_lang": detected_lang,
                 "target_lang": target_language,
             }
             yield {"type": "token", "content": text}
             yield {
                 "type": "done",
                 "report": {
-                    "source_language": source_language,
+                    "source_language": detected_lang,
                     "target_language": target_language,
                     "model_used": model,
                     "characters_input": len(text),
@@ -312,7 +317,7 @@ class TranslationService:
         yield {
             "type": "meta",
             "model": model,
-            "source_lang": source_language,
+            "source_lang": detected_lang,
             "target_lang": target_language,
             "total_chunks": len(chunks),
         }
@@ -418,7 +423,7 @@ class TranslationService:
         yield {
             "type": "done",
             "report": {
-                "source_language": source_language,
+                "source_language": detected_lang,
                 "target_language": target_language,
                 "model_used": model,
                 "characters_input": len(text),
