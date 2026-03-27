@@ -40,7 +40,7 @@ dist/
 .output/
 .nuxt/
 *.local
-*/static/assets/*
+**/static/assets/*
 
 # IDE
 .vscode/
