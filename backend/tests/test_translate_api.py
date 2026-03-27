@@ -11,6 +11,7 @@ async def test_health_endpoint(client: AsyncClient):
     with respx.mock:
         # Mock Ollama being unreachable
         respx.get("http://localhost:11434/api/tags").mock(return_value=Response(500))
+        respx.get("http://127.0.0.1:11434/api/tags").mock(return_value=Response(500))
         response = await client.get("/api/health")
 
     assert response.status_code == 200
@@ -38,7 +39,8 @@ async def test_translate_text_validates_target(client: AsyncClient):
 async def test_translate_text_success(client: AsyncClient):
     """Test successful text translation with mocked Ollama."""
     with respx.mock:
-        respx.post("http://localhost:11434/api/generate").mock(
+        respx.get("http://127.0.0.1:11434/api/tags").mock(return_value=Response(200, json={"models": []}))
+        respx.post("http://127.0.0.1:11434/api/generate").mock(
             return_value=Response(
                 200,
                 json={
