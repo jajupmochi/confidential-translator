@@ -194,6 +194,7 @@ class OllamaService:
 
         # Auto-detect thinking preference
         if thinking is None:
+            logger.debug(f"Thinking is None, using default: {settings.thinking_enabled}.")
             thinking = settings.thinking_enabled
 
         # Build options
@@ -209,6 +210,7 @@ class OllamaService:
                 "top_k": 20,
                 "presence_penalty": 1.5,
             })
+            logger.debug(f"Using thinking model \"{model}\", thinking disabled.")
         else:
             options["temperature"] = temperature
 
@@ -220,6 +222,8 @@ class OllamaService:
         }
         if system:
             payload["system"] = system
+        if thinking is False:
+            payload["think"] = False
 
         response = await client.post("/api/generate", json=payload)
         

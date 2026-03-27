@@ -29,6 +29,7 @@ class HistoryService:
         translation_type: str = "text",
         file_name: str | None = None,
         file_type: str | None = None,
+        target_file_name: str | None = None,
     ) -> int:
         """Save a translation record to the database. Returns the record ID."""
         record = TranslationHistory(
@@ -37,6 +38,7 @@ class HistoryService:
             translation_type=translation_type,
             file_name=file_name,
             file_type=file_type,
+            target_file_name=target_file_name,
             source_text=source_text[:10000],  # Limit stored text
             translated_text=translated_text[:10000],
             model_used=report.model_used,
@@ -113,6 +115,18 @@ class HistoryService:
         )
         await db.commit()
         return result.rowcount > 0
+
+    async def update_target_file(self, db: AsyncSession, record_id: int, target_file_name: str) -> bool:
+        """Update the target_file_name for a given history record."""
+        result = await db.execute(
+            select(TranslationHistory).where(TranslationHistory.id == record_id)
+        )
+        record = result.scalar_one_or_none()
+        if record:
+            record.target_file_name = target_file_name
+            await db.commit()
+            return True
+        return False
 
     async def get_statistics(self, db: AsyncSession) -> StatisticsResponse:
         """Get dashboard statistics."""
@@ -226,6 +240,7 @@ class HistoryService:
             target_language=db_record.target_language,
             translation_type=db_record.translation_type,
             file_name=db_record.file_name,
+            target_file_name=getattr(db_record, "target_file_name", None),
             file_type=db_record.file_type,
             source_text=db_record.source_text,
             translated_text=db_record.translated_text,

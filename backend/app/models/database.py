@@ -19,9 +19,10 @@ class TranslationHistory(Base):
     )
     source_language: Mapped[str] = mapped_column(String(10), nullable=False)
     target_language: Mapped[str] = mapped_column(String(10), nullable=False)
-    translation_type: Mapped[str] = mapped_column(String(20), nullable=False)  # 'text' or 'file'
+    translation_type: Mapped[str] = mapped_column(String(20), default="text") # "text", "file", "batch"
     file_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    file_type: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    target_file_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    file_type: Mapped[str | None] = mapped_column(String(50), nullable=True)
     source_text: Mapped[str] = mapped_column(Text, nullable=False)
     translated_text: Mapped[str] = mapped_column(Text, nullable=False)
     model_used: Mapped[str] = mapped_column(String(100), nullable=False)

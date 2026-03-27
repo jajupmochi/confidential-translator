@@ -144,6 +144,15 @@ class ExportRequest(BaseModel):
     original_file_type: str
     file_name: str = "translation"
 
+class ExportNativeRequest(BaseModel):
+    """Request to natively export and link translated content."""
+
+    history_id: int | None = None
+    save_path: str
+    translated_text: str
+    original_file_type: str
+    file_name: str = "translation"
+
 
 class HistoryRecord(BaseModel):
     """A single translation history record."""
@@ -154,6 +163,7 @@ class HistoryRecord(BaseModel):
     target_language: str
     translation_type: str
     file_name: str | None = None
+    target_file_name: str | None = None
     file_type: str | None = None
     source_text: str
     translated_text: str

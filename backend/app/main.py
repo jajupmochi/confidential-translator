@@ -12,9 +12,10 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
 
-from app.api import export, health, history, models, translate, ollama, settings as settings_router, streaming, glossary
+from app.api import export, health, history, models, translate, ollama, settings as settings_router, streaming, glossary, os_integration, validate_language
 from app.core.config import settings
 from app.core.database import init_db
 
@@ -75,6 +76,8 @@ app.include_router(history.router, prefix="/api")
 app.include_router(ollama.router, prefix="/api")
 app.include_router(settings_router.router, prefix="/api")
 app.include_router(glossary.router, prefix="/api")
+app.include_router(os_integration.router, prefix="/api")
+app.include_router(validate_language.router, prefix="/api")
 
 # Serve Vue frontend static files
 # Detect if running in a PyInstaller bundle
@@ -89,8 +92,33 @@ else:
 logger.info(f"Looking for static assets in: {static_dir}")
 
 if static_dir.exists():
-    # Mount static files at root. 'html=True' handles index.html for root path
+    from starlette.responses import HTMLResponse as StarletteHTMLResponse
+    from starlette.middleware.base import BaseHTTPMiddleware
+    from starlette.requests import Request as StarletteRequest
+
+    # Mount all static files at root — this serves index.html, assets, favicon, etc.
     app.mount("/", StaticFiles(directory=str(static_dir), html=True), name="static")
+
+    # SPA Fallback Middleware: intercept 404s for non-API GET requests → serve index.html
+    class SPAFallbackMiddleware(BaseHTTPMiddleware):
+        async def dispatch(self, request: StarletteRequest, call_next):
+            response = await call_next(request)
+            # If the response is 404 and the request is a GET for a non-API path,
+            # serve index.html so Vue Router can handle client-side routing.
+            if (
+                response.status_code == 404
+                and request.method == "GET"
+                and not request.url.path.startswith("/api")
+            ):
+                index_file = static_dir / "index.html"
+                if index_file.exists():
+                    return StarletteHTMLResponse(
+                        content=index_file.read_text(encoding="utf-8"),
+                        status_code=200,
+                    )
+            return response
+
+    app.add_middleware(SPAFallbackMiddleware)
 else:
     logger.warning(f"Static directory not found at {static_dir}. GUI will not be served.")
     

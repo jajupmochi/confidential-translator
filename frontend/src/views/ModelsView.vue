@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
+import { useI18n } from "vue-i18n";
 import { useOllamaStore } from "@/stores/ollama";
 import {
   Server,
@@ -13,6 +14,7 @@ import {
 } from "lucide-vue-next";
 
 const ollamaStore = useOllamaStore();
+const { t } = useI18n();
 const loading = ref(true);
 const pullModelName = ref("");
 const pullError = ref("");
@@ -39,7 +41,7 @@ async function pullModel() {
 }
 
 async function deleteModel(name: string) {
-  if (!confirm(`Delete model ${name}?`)) return;
+  if (!confirm(t("models.deleteConfirm", { name }))) return;
   try {
     const res = await fetch(`/api/models/${name}`, { method: "DELETE" });
     if (res.ok) {
@@ -67,7 +69,7 @@ const formatBytes = (bytes: number) => {
       <h1
         class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-500 dark:from-white dark:to-slate-400"
       >
-        Model Management
+        {{ t("models.title") }}
       </h1>
 
       <div class="flex items-center gap-2">
@@ -75,7 +77,7 @@ const formatBytes = (bytes: number) => {
           v-model="pullModelName"
           @keyup.enter="pullModel"
           type="text"
-          placeholder="e.g. qwen2.5:7b"
+          :placeholder="t('models.pullPlaceholder')"
           class="input-field w-48"
           :disabled="isPulling"
         />
@@ -86,7 +88,7 @@ const formatBytes = (bytes: number) => {
         >
           <Loader2 v-if="isPulling" class="w-4 h-4 animate-spin mr-1" />
           <Download v-else class="w-4 h-4 mr-1" />
-          Pull Model
+          {{ t("models.pull") }}
         </button>
       </div>
     </div>
@@ -112,7 +114,7 @@ const formatBytes = (bytes: number) => {
         </div>
         <div>
           <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-1">
-            Recommended Configuration
+            {{ t("models.recommended") }}
           </h2>
           <p class="text-slate-600 dark:text-slate-300 mb-2 text-sm">
             {{ ollamaStore.recommendation.reason }}
@@ -184,7 +186,7 @@ const formatBytes = (bytes: number) => {
           class="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2"
         >
           <Server class="w-5 h-5 text-indigo-500" />
-          Installed Models
+          {{ t("models.installed") }}
         </h2>
       </div>
 
@@ -196,8 +198,7 @@ const formatBytes = (bytes: number) => {
         v-else-if="ollamaStore.models.length === 0"
         class="p-12 text-center text-slate-500"
       >
-        No models installed. Type a model name (e.g. qwen2.5:7b) and click
-        Pull.
+        {{ t("models.noModelsDesc") }}
       </div>
 
       <div v-else class="divide-y divide-slate-200 dark:divide-slate-800">

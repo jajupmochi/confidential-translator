@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
+import { useI18n } from "vue-i18n";
 import { useSettingsStore } from "@/stores/settings";
 
+const { t } = useI18n();
 const settings = useSettingsStore();
 
 onMounted(() => {
@@ -15,7 +17,7 @@ onMounted(() => {
       <h1
         class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-500 dark:from-white dark:to-slate-400 mb-6"
       >
-        Settings
+        {{ t("settings.title") }}
       </h1>
 
       <div class="space-y-8">
@@ -24,25 +26,25 @@ onMounted(() => {
           <h2
             class="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4 border-b border-slate-200 dark:border-slate-800 pb-2"
           >
-            Appearance
+            {{ t("settings.appearance") }}
           </h2>
 
           <div class="space-y-4">
             <div class="flex items-center justify-between">
               <div>
                 <p class="font-medium text-slate-900 dark:text-white">
-                  Theme Preference
+                  {{ t("settings.themePref") }}
                 </p>
-                <p class="text-sm text-slate-500">Select application theme</p>
+                <p class="text-sm text-slate-500">{{ t("settings.themeDesc") }}</p>
               </div>
               <select
                 class="input-field w-40"
                 :value="settings.theme"
                 @change="(e) => settings.setTheme((e.target as any).value)"
               >
-                <option value="system">System Default</option>
-                <option value="light">Light Mode</option>
-                <option value="dark">Dark Mode</option>
+                <option value="system">{{ t("settings.systemDefault") }}</option>
+                <option value="light">{{ t("settings.lightMode") }}</option>
+                <option value="dark">{{ t("settings.darkMode") }}</option>
               </select>
             </div>
           </div>
@@ -53,7 +55,7 @@ onMounted(() => {
           <h2
             class="text-sm font-bold text-indigo-500 dark:text-indigo-400 uppercase tracking-wider mb-4 border-b border-indigo-200 dark:border-indigo-900/30 pb-2"
           >
-            Ollama Engine
+            {{ t("settings.ollamaEngine") }}
           </h2>
 
           <div class="space-y-4">
@@ -77,7 +79,7 @@ onMounted(() => {
                   @click="settings.saveBackendSettings()"
                   class="btn-primary py-2 text-xs"
                 >
-                  Save
+                  {{ t("common.save") }}
                 </button>
               </div>
             </div>
@@ -89,54 +91,54 @@ onMounted(() => {
           <h2
             class="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4 border-b border-slate-200 dark:border-slate-800 pb-2"
           >
-            Translation Defaults
+            {{ t("settings.translationSettings") }}
           </h2>
 
           <div class="space-y-4">
             <div class="flex items-center justify-between">
               <div>
                 <p class="font-medium text-slate-900 dark:text-white">
-                  Source Language
+                  {{ t("settings.defaultSource") }}
                 </p>
-                <p class="text-sm text-slate-500">Default input language</p>
+                <p class="text-sm text-slate-500">{{ t("settings.langDesc") }}</p>
               </div>
               <select
                 v-model="settings.defaultSourceLang"
                 class="input-field w-40"
               >
-                <option value="auto">Auto Detect</option>
+                <option value="auto">{{ t("common.autoDetect") }}</option>
                 <option value="en">English</option>
-                <option value="zh">Chinese</option>
-                <option value="de">German</option>
-                <option value="fr">French</option>
+                <option value="zh">中文</option>
+                <option value="de">Deutsch</option>
+                <option value="fr">Français</option>
               </select>
             </div>
 
             <div class="flex items-center justify-between">
               <div>
                 <p class="font-medium text-slate-900 dark:text-white">
-                  Target Language
+                  {{ t("settings.defaultTarget") }}
                 </p>
-                <p class="text-sm text-slate-500">Default output language</p>
+                <p class="text-sm text-slate-500">{{ t("settings.langDesc") }}</p>
               </div>
               <select
                 v-model="settings.defaultTargetLang"
                 class="input-field w-40"
               >
                 <option value="en">English</option>
-                <option value="zh">Chinese</option>
-                <option value="de">German</option>
-                <option value="fr">French</option>
+                <option value="zh">中文</option>
+                <option value="de">Deutsch</option>
+                <option value="fr">Français</option>
               </select>
             </div>
 
             <div class="flex items-center justify-between">
               <div>
                 <p class="font-medium text-slate-900 dark:text-white">
-                  Default Model
+                  {{ t("settings.defaultModel") }}
                 </p>
                 <p class="text-sm text-slate-500">
-                  Ollama model to use automatically
+                  {{ t("settings.defaultModelDesc") }}
                 </p>
               </div>
               <input

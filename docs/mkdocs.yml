@@ -1,22 +1,28 @@
 site_name: Confidential Translator
 site_description: A fully offline, privacy-first document translation system powered by local LLMs.
-site_url: https://example.github.io/confidential-translator/
-repo_url: https://github.com/example/confidential-translator
+site_url: https://jajupmochi.github.io/confidential-translator/
+repo_url: https://github.com/jajupmochi/confidential-translator
+repo_name: jajupmochi/confidential-translator
 
 theme:
   name: material
   logo: assets/logo.png
   favicon: assets/favicon.ico
+  font:
+    text: Inter
+    code: JetBrains Mono
   palette:
-    - scheme: default
-      primary: indigo
-      accent: indigo
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep purple
+      accent: amber
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
-    - scheme: slate
-      primary: indigo
-      accent: indigo
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep purple
+      accent: amber
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
@@ -24,8 +30,23 @@ theme:
     - navigation.tabs
     - navigation.sections
     - navigation.top
+    - navigation.instant
+    - navigation.tracking
     - search.suggest
     - search.highlight
+    - content.code.copy
+    - content.tabs.link
+    - toc.follow
+  icon:
+    repo: fontawesome/brands/github
+
+extra_css:
+  - stylesheets/extra.css
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/jajupmochi/confidential-translator
 
 plugins:
   - search
@@ -33,16 +54,27 @@ plugins:
 markdown_extensions:
   - attr_list
   - md_in_html
+  - def_list
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - admonition
+  - pymdownx.details
 
 nav:
   - Home: index.md
-  - Getting Started: 
+  - Getting Started:
     - Installation: getting-started/installation.md
     - Model Setup: getting-started/model-setup.md
   - User Guide:
@@ -53,4 +85,3 @@ nav:
   - Developers:
     - Architecture: dev/architecture.md
     - API Reference: dev/api.md
-    - UI Components (Storybook): dev/storybook.md

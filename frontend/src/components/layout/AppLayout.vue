@@ -42,7 +42,7 @@ onUnmounted(() => {
     <div class="flex-1 flex flex-col h-full relative z-10 overflow-hidden">
       <!-- Header -->
       <header
-        class="h-16 flex-shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md px-6 flex items-center justify-between"
+        class="relative z-50 h-16 flex-shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md px-6 flex items-center justify-between"
       >
         <!-- Mobile menu placeholder (hidden on desktop) -->
         <div class="md:hidden font-bold tracking-tight">CT Translator</div>
@@ -66,7 +66,9 @@ onUnmounted(() => {
       <main class="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-6 lg:p-8">
         <router-view v-slot="{ Component }">
           <transition name="page" mode="out-in">
-            <component :is="Component" />
+            <keep-alive>
+              <component :is="Component" />
+            </keep-alive>
           </transition>
         </router-view>
       </main>

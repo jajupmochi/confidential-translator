@@ -9,6 +9,7 @@ import {
   ChevronDown,
   ChevronRight,
   Brain,
+  AlertTriangle,
 } from "lucide-vue-next";
 import { useSettingsStore } from "@/stores/settings";
 import ModelMissingModal from "@/components/common/ModelMissingModal.vue";
@@ -32,16 +33,40 @@ const showModelMissingModal = ref(false);
 const missingModelName = ref("");
 let timerInterval: ReturnType<typeof setInterval> | null = null;
 
+// Custom language support
+const customSourceLang = ref("");
+const customTargetLang = ref("");
+const showLangValidationModal = ref(false);
+const langValidationMessage = ref("");
+const langValidationSuggestions = ref<string[]>([]);
+const langValidationInput = ref("");
+const langValidationField = ref<"source" | "target">("source");
+const isValidatingLang = ref(false);
+
+const sourceLang = ref(settings.defaultSourceLang);
+const targetLang = ref(settings.defaultTargetLang);
+
 const langOptions = [
   { value: "auto", label: t("common.autoDetect") },
   { value: "en", label: "English" },
   { value: "zh", label: "中文" },
   { value: "de", label: "Deutsch" },
   { value: "fr", label: "Français" },
+  { value: "custom", label: "✏️ Custom…" },
 ];
 
 const targetLangOptions = langOptions.filter((l) => l.value !== "auto");
 const characterCount = computed(() => sourceText.value.length);
+
+function getEffectiveSourceLang(): string {
+  if (sourceLang.value === "custom") return customSourceLang.value.trim();
+  return sourceLang.value;
+}
+
+function getEffectiveTargetLang(): string {
+  if (targetLang.value === "custom") return customTargetLang.value.trim();
+  return targetLang.value;
+}
 
 function startTimer() {
   elapsedSeconds.value = 0;
@@ -57,8 +82,77 @@ function stopTimer() {
   }
 }
 
+async function validateLanguage(langName: string): Promise<{valid: boolean; suggestions: string[]}> {
+  try {
+    isValidatingLang.value = true;
+    const res = await fetch("/api/validate-language", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ language_name: langName, model: settings.defaultModel }),
+    });
+    if (!res.ok) return { valid: false, suggestions: [] };
+    const data = await res.json();
+    return { valid: data.valid, suggestions: data.suggestions || [] };
+  } catch {
+    return { valid: false, suggestions: [] };
+  } finally {
+    isValidatingLang.value = false;
+  }
+}
+
+function handleLangSuggestionClick(suggestion: string) {
+  langValidationInput.value = suggestion;
+}
+
+async function handleLangValidationRetry() {
+  const input = langValidationInput.value.trim();
+  if (!input) return;
+
+  const result = await validateLanguage(input);
+  if (result.valid) {
+    if (langValidationField.value === "source") {
+      customSourceLang.value = input;
+    } else {
+      customTargetLang.value = input;
+    }
+    showLangValidationModal.value = false;
+    handleTranslate();
+  } else {
+    langValidationMessage.value = `"${input}" is not recognized as a valid language.`;
+    langValidationSuggestions.value = result.suggestions;
+  }
+}
+
 async function handleTranslate() {
   if (!sourceText.value.trim() || isTranslating.value) return;
+
+  // Validate custom languages first
+  const effSource = getEffectiveSourceLang();
+  const effTarget = getEffectiveTargetLang();
+
+  if (sourceLang.value === "custom" && effSource) {
+    const result = await validateLanguage(effSource);
+    if (!result.valid) {
+      langValidationField.value = "source";
+      langValidationMessage.value = `"${effSource}" is not recognized as a valid language name.`;
+      langValidationSuggestions.value = result.suggestions;
+      langValidationInput.value = effSource;
+      showLangValidationModal.value = true;
+      return;
+    }
+  }
+
+  if (targetLang.value === "custom" && effTarget) {
+    const result = await validateLanguage(effTarget);
+    if (!result.valid) {
+      langValidationField.value = "target";
+      langValidationMessage.value = `"${effTarget}" is not recognized as a valid language name.`;
+      langValidationSuggestions.value = result.suggestions;
+      langValidationInput.value = effTarget;
+      showLangValidationModal.value = true;
+      return;
+    }
+  }
 
   isTranslating.value = true;
   translatedText.value = "";
@@ -77,8 +171,8 @@ async function handleTranslate() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         text: sourceText.value,
-        source_language: settings.defaultSourceLang,
-        target_language: settings.defaultTargetLang,
+        source_language: effSource || "auto",
+        target_language: effTarget,
         model: settings.defaultModel,
       }),
       signal: abortController.value.signal,
@@ -114,7 +208,7 @@ async function handleTranslate() {
           switch (event.type) {
             case "meta":
               activeModel.value = event.model;
-              if (event.source_lang && settings.defaultSourceLang === "auto") {
+              if (event.source_lang && sourceLang.value === "auto") {
                 const det = langOptions.find((l) => l.value === event.source_lang);
                 if (det) detectedLanguage.value = det.label;
               }
@@ -182,27 +276,54 @@ onBeforeUnmount(() => {
     <!-- Toolbar -->
     <div class="flex items-center gap-4 p-4 glass-card shadow-sm flex-shrink-0">
       <div class="flex items-center gap-2">
-        <select
-          v-model="settings.defaultSourceLang"
-          class="input-field max-w-[150px] py-1.5 text-sm"
-        >
-          <option v-for="l in langOptions" :key="l.value" :value="l.value">
-            {{ l.label }}
-          </option>
-        </select>
-        <span class="text-slate-400">&rarr;</span>
-        <select
-          v-model="settings.defaultTargetLang"
-          class="input-field max-w-[150px] py-1.5 text-sm font-medium text-indigo-600 dark:text-indigo-400"
-        >
-          <option
-            v-for="l in targetLangOptions"
-            :key="l.value"
-            :value="l.value"
+        <div class="flex flex-col gap-1">
+          <select
+            v-model="sourceLang"
+            class="input-field max-w-[150px] py-1.5 text-sm"
           >
-            {{ l.label }}
-          </option>
-        </select>
+            <option v-for="l in langOptions" :key="l.value" :value="l.value">
+              {{ l.label }}
+            </option>
+          </select>
+          <input
+            v-if="sourceLang === 'custom'"
+            v-model="customSourceLang"
+            type="text"
+            placeholder="e.g. Español, 日本語…"
+            class="input-field max-w-[150px] py-1 text-xs"
+          />
+        </div>
+        <span class="text-slate-400">&rarr;</span>
+        <div class="flex flex-col gap-1">
+          <select
+            v-model="targetLang"
+            class="input-field max-w-[150px] py-1.5 text-sm font-medium text-indigo-600 dark:text-indigo-400"
+          >
+            <option
+              v-for="l in targetLangOptions"
+              :key="l.value"
+              :value="l.value"
+            >
+              {{ l.label }}
+            </option>
+          </select>
+          <input
+            v-if="targetLang === 'custom'"
+            v-model="customTargetLang"
+            type="text"
+            placeholder="e.g. Español, 日本語…"
+            class="input-field max-w-[150px] py-1 text-xs"
+          />
+        </div>
+      </div>
+
+      <!-- Language validation indicator -->
+      <div
+        v-if="isValidatingLang"
+        class="flex items-center gap-3 px-3 py-1.5 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/30 text-amber-700 dark:text-amber-400 text-xs font-medium"
+      >
+        <Loader2 class="w-3.5 h-3.5 animate-spin" />
+        <span>Validating language name with AI…</span>
       </div>
 
       <div class="flex-1"></div>
@@ -233,11 +354,12 @@ onBeforeUnmount(() => {
       <button
         v-else
         @click="handleTranslate"
-        :disabled="characterCount === 0"
+        :disabled="characterCount === 0 || isValidatingLang"
         class="btn-primary min-w-[140px]"
       >
-        <Play class="w-4 h-4 mr-1 fill-current" />
-        {{ t("common.translate") }}
+        <Loader2 v-if="isValidatingLang" class="w-4 h-4 mr-1 animate-spin" />
+        <Play v-else class="w-4 h-4 mr-1 fill-current" />
+        {{ isValidatingLang ? 'Validating…' : t("common.translate") }}
       </button>
     </div>
 
@@ -249,7 +371,7 @@ onBeforeUnmount(() => {
       >
         <div class="absolute top-4 left-4 z-10 flex gap-2">
           <span
-            v-if="settings.defaultSourceLang === 'auto' && detectedLanguage"
+            v-if="sourceLang === 'auto' && detectedLanguage"
             class="px-2 py-1 text-xs font-medium rounded-md bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300 backdrop-blur-md"
           >
             {{ t("common.autoDetect") }}: {{ detectedLanguage }}
@@ -351,6 +473,15 @@ onBeforeUnmount(() => {
             >
           </div>
         </div>
+
+        <!-- AI Disclaimer -->
+        <div
+          v-if="report && !isTranslating"
+          class="px-4 py-2 bg-amber-50 dark:bg-amber-900/10 border-t border-amber-200/50 dark:border-amber-800/30 flex items-center gap-2 text-xs text-amber-700 dark:text-amber-400"
+        >
+          <AlertTriangle class="w-3.5 h-3.5 flex-shrink-0" />
+          <span>⚠️ This translation was generated by an external AI language model. Please verify critical content for accuracy.</span>
+        </div>
       </div>
     </div>
 
@@ -359,5 +490,64 @@ onBeforeUnmount(() => {
       v-model:show="showModelMissingModal"
       :model-name="missingModelName"
     />
+
+    <!-- Language Validation Modal -->
+    <Teleport to="body">
+      <div
+        v-if="showLangValidationModal"
+        class="fixed inset-0 z-[999] flex items-center justify-center bg-black/40 backdrop-blur-sm"
+        @click.self="showLangValidationModal = false"
+      >
+        <div class="glass-card p-6 w-full max-w-md mx-4 space-y-4 shadow-2xl">
+          <div class="flex items-center gap-2 text-amber-600 dark:text-amber-400">
+            <AlertTriangle class="w-5 h-5" />
+            <h3 class="text-lg font-bold">Invalid Language</h3>
+          </div>
+          <p class="text-sm text-slate-600 dark:text-slate-300">{{ langValidationMessage }}</p>
+
+          <div v-if="langValidationSuggestions.length" class="space-y-2">
+            <p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Did you mean:</p>
+            <div class="flex flex-wrap gap-2">
+              <button
+                v-for="suggestion in langValidationSuggestions"
+                :key="suggestion"
+                @click="handleLangSuggestionClick(suggestion)"
+                class="px-3 py-1.5 text-sm rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/50 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors cursor-pointer"
+              >
+                {{ suggestion }}
+              </button>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-xs font-medium text-slate-500 dark:text-slate-400">Revised language name:</label>
+            <input
+              v-model="langValidationInput"
+              type="text"
+              class="input-field w-full"
+              placeholder="Type corrected language name…"
+              @keyup.enter="handleLangValidationRetry"
+            />
+          </div>
+
+          <div class="flex justify-end gap-3">
+            <button
+              @click="showLangValidationModal = false"
+              class="btn-secondary text-sm"
+            >
+              Cancel
+            </button>
+            <button
+              @click="handleLangValidationRetry"
+              :disabled="!langValidationInput.trim() || isValidatingLang"
+              class="btn-primary text-sm"
+            >
+              <Loader2 v-if="isValidatingLang" class="w-3.5 h-3.5 mr-1 animate-spin" />
+              Retry
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>

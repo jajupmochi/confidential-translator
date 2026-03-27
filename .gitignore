@@ -72,7 +72,7 @@ site/
 *.sqlite3
 
 # Vibe
-vibe/
+# vibe/
 
 # OS
 Thumbs.db

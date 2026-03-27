@@ -124,6 +124,72 @@ async def translate_file(
     )
 
 
+@router.post("/file/native", response_model=FileTranslationResponse)
+async def translate_file_native(
+    file_path: str = Form(...),
+    source_language: str = Form(default="auto"),
+    target_language: str = Form(default="en"),
+    model: str = Form(default=None),
+    db: AsyncSession = Depends(get_db),
+) -> FileTranslationResponse:
+    import os
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="File not found at the specified path.")
+        
+    filename = os.path.basename(file_path)
+    if not file_service.is_supported(filename):
+        raise HTTPException(status_code=400, detail="Unsupported file type.")
+        
+    # Read the local file directly
+    try:
+        with open(file_path, "rb") as f:
+            content = f.read()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to read file: {e}")
+        
+    # Extract text
+    try:
+        original_text = await file_service.extract_text(content, filename)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to extract text: {e}") from e
+
+    if not original_text.strip():
+        raise HTTPException(status_code=400, detail="No text could be extracted from the file")
+
+    # Translate
+    try:
+        translated_text, report = await translation_service.translate(
+            text=original_text,
+            target_language=target_language,
+            source_language=source_language,
+            model=model,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Translation failed: {e}") from e
+
+    file_type = file_service.get_file_type(filename) or ""
+
+    # Save to history USING INJECTED ABSOLUTE PATH AS FILE_NAME
+    await history_service.save_translation(
+        db=db,
+        report=report,
+        source_text=original_text,
+        translated_text=translated_text,
+        translation_type="file",
+        file_name=file_path, # STORE ABSOLUTE PATH
+        file_type=file_type,
+    )
+
+    return FileTranslationResponse(
+        translated_text=translated_text,
+        original_text=original_text,
+        file_name=file_path,
+        file_type=file_type,
+        report=report,
+        export_available=file_type in (".txt", ".md", ".csv", ".xlsx"),
+    )
+
+
 @router.get("/detect-language", response_model=LanguageDetectionResponse)
 async def detect_language(text: str) -> LanguageDetectionResponse:
     """Detect the language of the given text."""

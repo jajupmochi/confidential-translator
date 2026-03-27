@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
 import { Plus, Trash2, Upload, BookOpen } from "lucide-vue-next";
+
+const { t } = useI18n();
 
 interface GlossaryEntry {
   id: number;
@@ -144,10 +147,10 @@ onMounted(fetchGlossaries);
           <h1
             class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-500 dark:from-white dark:to-slate-400"
           >
-            📖 Glossaries
+            📖 {{ t("glossary.title") }}
           </h1>
           <p class="text-sm text-slate-500 mt-1">
-            Define term mappings for consistent, domain-specific translations
+            {{ t("glossary.subtitle") }}
           </p>
         </div>
         <button
@@ -155,7 +158,7 @@ onMounted(fetchGlossaries);
           class="btn-primary"
         >
           <Plus class="w-4 h-4 mr-1" />
-          New Glossary
+          {{ t("glossary.newGlossary") }}
         </button>
       </div>
 
@@ -167,7 +170,7 @@ onMounted(fetchGlossaries);
         <input
           v-model="newName"
           type="text"
-          placeholder="Glossary name (e.g. Medical Terms)"
+          :placeholder="t('glossary.namePlaceholder')"
           class="input-field w-full"
         />
         <div class="flex items-center gap-3">
@@ -183,7 +186,7 @@ onMounted(fetchGlossaries);
             </option>
           </select>
           <button @click="createGlossary" class="btn-primary text-sm">
-            Create
+            {{ t("common.create") }}
           </button>
         </div>
       </div>
@@ -224,7 +227,7 @@ onMounted(fetchGlossaries);
                 <p class="text-xs text-slate-500">
                   {{ getLangLabel(g.source_language) }} →
                   {{ getLangLabel(g.target_language) }}
-                  &nbsp;·&nbsp; {{ g.entry_count }} terms
+                  &nbsp;·&nbsp; {{ g.entry_count }} {{ t("common.terms") }}
                 </p>
               </div>
             </div>
@@ -284,7 +287,7 @@ onMounted(fetchGlossaries);
                 v-if="!entries[g.id]?.length"
                 class="text-xs text-slate-400 text-center py-4"
               >
-                No entries. Add terms below or upload a CSV/TSV file.
+                {{ t("glossary.noEntries") }}
               </p>
             </div>
 
@@ -295,7 +298,7 @@ onMounted(fetchGlossaries);
               <input
                 v-model="newSourceTerm"
                 type="text"
-                placeholder="Source term"
+                :placeholder="t('glossary.sourceTerm')"
                 class="input-field flex-1 text-sm font-mono"
                 @keydown.enter="addEntry(g.id)"
               />
@@ -303,7 +306,7 @@ onMounted(fetchGlossaries);
               <input
                 v-model="newTargetTerm"
                 type="text"
-                placeholder="Target translation"
+                :placeholder="t('glossary.targetTranslation')"
                 class="input-field flex-1 text-sm font-mono"
                 @keydown.enter="addEntry(g.id)"
               />

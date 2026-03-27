@@ -5,6 +5,7 @@
         "fileTranslation": "文件翻译",
         "history": "历史记录",
         "models": "本地模型",
+        "glossary": "术语表",
         "settings": "设置"
     },
     "common": {
@@ -14,8 +15,23 @@
         "download": "下载",
         "copy": "复制",
         "delete": "删除",
+        "create": "创建",
+        "save": "保存",
+        "search": "搜索",
+        "close": "关闭",
         "autoDetect": "自动检测",
-        "copied": "已复制到剪贴板！"
+        "copied": "已复制到剪贴板！",
+        "noData": "暂无数据",
+        "loading": "加载中...",
+        "all": "全部",
+        "text": "文本",
+        "file": "文件",
+        "source": "源语言",
+        "target": "目标语言",
+        "actions": "操作",
+        "terms": "词条",
+        "previous": "上一页",
+        "next": "下一页"
     },
     "dashboard": {
         "welcome": "欢迎使用本地机密翻译",
@@ -41,11 +57,88 @@
         "supportedFormats": "支持格式: PDF, 图片 (OCR), DOCX, MD, XLSX, CSV, TXT (最大50MB)",
         "exporting": "正在导出文件..."
     },
+    "history": {
+        "title": "翻译历史",
+        "searchPlaceholder": "搜索历史记录...",
+        "columns": {
+            "date": "日期",
+            "type": "类型",
+            "languages": "语种",
+            "source": "原文",
+            "translation": "译文",
+            "model": "模型",
+            "speed": "速度",
+            "actions": "操作"
+        },
+        "clickToCopy": "点击复制",
+        "clickToOpenFolder": "点击打开文件夹",
+        "hoverSource": "点击复制原文",
+        "hoverTranslation": "点击复制译文",
+        "noHistory": "暂无翻译历史",
+        "noHistoryDesc": "开始翻译后，您的翻译记录将显示在这里。",
+        "deleteConfirm": "确定要删除此记录吗？",
+        "alertOpenFail": "打开文件失败",
+        "alertConnectionError": "打开文件时连接错误。"
+    },
+    "settings": {
+        "title": "设置",
+        "appearance": "外观",
+        "themePref": "主题偏好",
+        "themeDesc": "选择应用主题",
+        "systemDefault": "跟随系统",
+        "lightMode": "浅色模式",
+        "darkMode": "深色模式",
+        "language": "语言",
+        "langDesc": "选择显示语言",
+        "ollamaEngine": "Ollama 引擎",
+        "serverUrl": "服务器地址",
+        "serverUrlDesc": "Ollama API 端点",
+        "defaultModel": "默认模型",
+        "defaultModelDesc": "用于翻译的模型",
+        "translationSettings": "翻译设置",
+        "defaultSource": "默认源语言",
+        "defaultTarget": "默认目标语言"
+    },
     "models": {
+        "title": "本地模型",
         "installed": "已安装模型",
         "recommended": "为您系统推荐",
         "pull": "下载新模型",
+        "pullPlaceholder": "输入模型名称 (如 qwen3:14b)",
         "pulling": "下载中...",
-        "deleteConfirm": "确定要删除此模型吗？"
-    }
+        "deleteConfirm": "确定要删除模型 {name} 吗？",
+        "noModels": "未安装模型",
+        "noModelsDesc": "从 Ollama 模型库下载模型以开始使用。",
+        "size": "大小",
+        "modified": "修改时间",
+        "quantization": "量化",
+        "parameters": "参数"
+    },
+    "glossary": {
+        "title": "术语表",
+        "subtitle": "定义术语映射，确保特定领域翻译的一致性",
+        "newGlossary": "新建术语表",
+        "namePlaceholder": "术语表名称 (如 医学术语)",
+        "noGlossaries": "暂无术语表",
+        "noGlossariesDesc": "创建术语表以确保特定领域术语翻译的一致性。",
+        "noEntries": "暂无词条。请在下方添加，或上传 CSV/TSV 文件。",
+        "sourceTerm": "源术语",
+        "targetTranslation": "目标翻译",
+        "uploadCsv": "CSV/TSV"
+    },
+    "modals": {
+        "modelMissing": {
+            "title": "模型未找到",
+            "body": "模型 '{name}' 未安装。是否要下载该模型？",
+            "download": "下载模型",
+            "cancel": "取消"
+        },
+        "ollamaRequired": {
+            "title": "需要 Ollama",
+            "body": "Ollama 未运行。请安装并启动 Ollama 以使用翻译器。",
+            "install": "安装 Ollama",
+            "retry": "重试连接"
+        }
+    },
+    "disclaimer": "本翻译由 AI 模型生成，请注意验证翻译质量和准确性。"
 }
