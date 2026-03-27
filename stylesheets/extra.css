@@ -1,0 +1,78 @@
+/* ─── Hero Section ─────────────────────────────────────────────────────── */
+.hero {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 50%, #2563eb 100%);
+  border-radius: 1rem;
+  color: white;
+  margin-bottom: 2rem;
+}
+
+.hero h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  margin-bottom: 2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero .md-button {
+  margin: 0.5rem;
+  border-radius: 2rem;
+  padding: 0.75rem 2rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.hero .md-button--primary {
+  background-color: white;
+  color: #4f46e5;
+  border: none;
+}
+
+.hero .md-button--primary:hover {
+  background-color: #f0f0ff;
+}
+
+/* ─── Feature Grid Cards ────────────────────────────────────────────── */
+.grid.cards > ul > li {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.75rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.grid.cards > ul > li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* ─── Badges (for README-style inline badges) ──────────────────────── */
+.badge-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+/* ─── Screenshot frames ─────────────────────────────────────────────── */
+.screenshot {
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  margin: 1.5rem 0;
+}
+
+.screenshot img {
+  width: 100%;
+  display: block;
+}
