@@ -214,6 +214,7 @@ Now we go for chore and cicd:
 (Agent: Gemini Antigravity; Model: Claude Opus 4.6 Thinking)
 
 
+- language changing still not fully fixed. And German and French are not shown in their own language. 
 - If a file is too long, llm will forget its task.
 - If a text have some special chars, the translation will stop, e.g., "2.1 Übersicht . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ."
 - Download Dialog Default Filename still not fully fixed. "name" input box at the should be auto filled with default file name, which is not the case now. Maybe also auto open the file in the file system after downloading.

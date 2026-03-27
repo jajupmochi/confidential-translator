@@ -13,6 +13,12 @@ hide:
   <a href="https://github.com/jajupmochi/confidential-translator" class="md-button">View on GitHub</a>
 </div>
 
+<br>
+
+<video controls autoplay loop muted playsinline width="100%">
+  <source src="assets/demo.mp4" type="video/mp4">
+</video>
+
 ## Why Confidential Translator?
 
 Most translation services send your documents to external servers. **Confidential Translator runs entirely on your machine** — no internet required, no data leakage possible. Perfect for legal documents, medical records, financial reports, and any sensitive content.

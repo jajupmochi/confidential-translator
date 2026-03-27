@@ -11,6 +11,8 @@ A **fully offline, privacy-first** document translation system powered by local 
 
 Built with **Python 3.12 (FastAPI)** + **Vue 3 (Vite + TailwindCSS v4)**, featuring a stunning glassmorphism interface with dark mode.
 
+[![Demo](docs/docs/assets/demo.gif)](docs/docs/assets/demo.mp4)
+
 ## ✨ Features
 
 | Feature | Description |
